@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="${user.id != null} ? 'Update User' : 'Add User'">Add User</title>
+</head>
+<body>
+<center><h1 th:text="${user.id != null} ? 'Update User' : 'Add User'">Add User</h1></center>
+<br>
+
+<form th:action="${user.id != null} ? @{/admin/updateUser} : @{/admin/addUser}" th:object="${user}" method="post" align="center">
+  <table align="center">
+    <input type="hidden" th:field="*{id}" />
+
+    <tr>
+      <td><label for="name">Name:</label></td>
+      <td><input type="text" th:field="*{firstName}" id="name" required /></td>
+    </tr>
+    <tr>
+      <td><label for="lastName">LastName:</label></td>
+      <td><input type="text" th:field="*{lastName}" id="lastName" required /></td>
+    </tr>
+    <tr>
+      <td><label for="email">Email:</label></td>
+      <td><input type="email" th:field="*{email}" id="email" required /></td>
+    </tr>
+    <tr>
+      <td><label for="username">UserName:</label></td>
+      <td><input type="text" th:field="*{username}" id="username" required /></td>
+    </tr>
+    <tr>
+      <td><label for="password">Password:</label></td>
+      <td><input type="password" th:field="*{password}" id="password" /></td>
+    </tr>
+    <tr>
+      <td><label for="roles">Roles:</label></td>
+      <td>
+        <!-- Выпадающий список для выбора ролей -->
+        <select th:field="*{roles}" id="roles" multiple>
+          <option th:each="role : ${roles}" th:value="${role.id}" th:text="${role.name}">Role Name</option>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td>Current Roles:</td>
+      <td>
+        <!-- Блок с уже назначенными ролями пользователя в виде списка -->
+        <ul>
+          <li th:each="userRole : ${user.roles}" th:text="${userRole.name}">Existing Role</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2" align="center">
+        <br>
+        <input type="submit" th:value="${user.id != null} ? 'Update User' : 'Add User'" />
+      </td>
+    </tr>
+  </table>
+</form>
+</body>
+</html>

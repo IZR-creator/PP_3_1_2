@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Users</title>
+</head>
+<body>
+<center><h1>Table Users</h1></center>
+<br>
+<table border="1" cellpadding="8" cellspacing="0" align="center">
+    <tr>
+        <th>name</th>
+        <th>lastname</th>
+        <th>email</th>
+        <th>username</th>
+        <th>password</th>
+        <th>roles</th>
+        <th>Operations</th>
+    </tr>
+    <tr th:each="user : ${userList}">
+        <td th:text="${user.firstName}"></td>
+        <td th:text="${user.lastName}"></td>
+        <td th:text="${user.email}"></td>
+        <td th:text="${user.username}"></td>
+        <td th:text="${user.password}"></td>
+        <td th:text="${user.getRoles()}"></td>
+        <td>
+            <input type="button" value="Update"
+                   th:onclick="|window.location.href='@{/admin/updateUser(id=${user.id})}'|">
+            <form th:action="@{/admin}" method="post" style="display:inline;">
+                <input type="hidden" name="id" th:value="${user.id}" />
+                <input type="submit" value="Delete" />
+            </form>
+        </td>
+    </tr>
+</table>
+
+<br>
+
+<div align="center">
+    <input type="button" value="Add User" th:onclick="|window.location.href='@{/admin/addUser}'|"/>
+</div>
+
+</body>
+</html>
