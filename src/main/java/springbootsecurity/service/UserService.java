@@ -15,8 +15,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
 @Transactional
+@Service
 public class UserService implements UserDetailsService {
 
     private final UserDao userDao;
@@ -46,27 +46,22 @@ public class UserService implements UserDetailsService {
         return userDao.findAll();
     }
 
-    @Transactional
     public void saveUser(User user) {
         userDao.save(user);
     }
 
-    @Transactional
     public void removeUser(long id) {
         userDao.deleteById(id);
     }
 
-    @Transactional
     public void updateUser(User user) {
         userDao.save(user);
     }
 
-    @Transactional
     public User getUser(long id) {
         return userDao.getById(id);
     }
 
-    @Transactional
     public User getUserByName(String name) {
         return userDao.findByUsername(name);
     }

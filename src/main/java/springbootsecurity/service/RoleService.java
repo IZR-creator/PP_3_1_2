@@ -8,6 +8,7 @@ import springbootsecurity.model.Role;
 
 import java.util.List;
 
+@Transactional
 @Service
 public class RoleService {
 
@@ -22,27 +23,6 @@ public class RoleService {
         return roleDao.findAll();
     }
 
-    @Transactional
-    public void saveRole(Role role) {
-        roleDao.save(role);
-    }
-
-    @Transactional
-    public void removeRole(long id) {
-        roleDao.deleteById(id);
-    }
-
-    @Transactional
-    public void updateRole(Role user) {
-        roleDao.save(user);
-    }
-
-    @Transactional
-    public Role getRole(long id) {
-        return roleDao.getById(id);
-    }
-
-    @Transactional
     public List<Role> getRolesByIds(List<Long> ids) {
         return roleDao.findAllById(ids);
     }

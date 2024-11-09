@@ -35,7 +35,6 @@
     <tr>
       <td><label for="roles">Roles:</label></td>
       <td>
-        <!-- Выпадающий список для выбора ролей -->
         <select th:field="*{roles}" id="roles" multiple>
           <option th:each="role : ${roles}" th:value="${role.id}" th:text="${role.name}">Role Name</option>
         </select>
@@ -44,7 +43,6 @@
     <tr>
       <td>Current Roles:</td>
       <td>
-        <!-- Блок с уже назначенными ролями пользователя в виде списка -->
         <ul>
           <li th:each="userRole : ${user.roles}" th:text="${userRole.name}">Existing Role</li>
         </ul>
