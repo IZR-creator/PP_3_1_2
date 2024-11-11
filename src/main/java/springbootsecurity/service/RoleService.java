@@ -5,8 +5,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springbootsecurity.dao.RoleDao;
 import springbootsecurity.model.Role;
+import springbootsecurity.model.User;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Transactional
 @Service
@@ -25,5 +28,13 @@ public class RoleService {
 
     public List<Role> getRolesByIds(List<Long> ids) {
         return roleDao.findAllById(ids);
+    }
+
+    public void saveRole(Role role) {
+        roleDao.save(role);
+    }
+
+    public Set<Role> findByIds(List<Long> roleIds) {
+        return new HashSet<>(roleDao.findAllById(roleIds));
     }
 }

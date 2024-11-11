@@ -33,26 +33,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 .loginPage("/login")
                 .successHandler(successUserHandler)
+                .loginProcessingUrl("/login")
+                .usernameParameter("email")
+                .passwordParameter("password")
                 .permitAll()
                 .and()
                 .logout()
                 .logoutSuccessUrl("/login")
                 .permitAll();
     }
-
-    // аутентификация inMemory
-//    @Bean
-//    @Override
-//    public UserDetailsService userDetailsService() {
-//        UserDetails user =
-//                User.withDefaultPasswordEncoder()
-//                        .username("user")
-//                        .password("user")
-//                        .roles("USER")
-//                        .build();
-//
-//        return new InMemoryUserDetailsManager(user);
-//    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {

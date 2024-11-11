@@ -27,8 +27,8 @@ public class UserService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userDao.findByUsername(username);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userDao.findByEmail(email);
         if (user == null) {
             throw new UsernameNotFoundException("User not found");
         }
@@ -62,7 +62,7 @@ public class UserService implements UserDetailsService {
         return userDao.getById(id);
     }
 
-    public User getUserByName(String name) {
-        return userDao.findByUsername(name);
+    public User getUserByEmail(String name) {
+        return userDao.findByEmail(name);
     }
 }

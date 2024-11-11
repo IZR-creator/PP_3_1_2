@@ -24,7 +24,7 @@ public class UserController {
     public String getUser(ModelMap model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String currentUsername = ((UserDetails) auth.getPrincipal()).getUsername();
-        User user = userService.getUserByName(currentUsername);
+        User user = userService.getUserByEmail(currentUsername);
         if (!user.getUsername().equals(currentUsername)) {
             throw new AccessDeniedException("You are not authorized to view this user");
         }

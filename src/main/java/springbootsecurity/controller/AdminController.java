@@ -1,7 +1,11 @@
 package springbootsecurity.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import springbootsecurity.model.Role;
@@ -11,25 +15,36 @@ import springbootsecurity.service.UserService;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Controller
 public class AdminController {
 
+    private final PasswordEncoder passwordEncoder;
     private final UserService userService;
     private final RoleService roleService;
 
     @Autowired
-    public AdminController(UserService userService, RoleService roleService) {
+    public AdminController(PasswordEncoder passwordEncoder, UserService userService, RoleService roleService) {
+        this.passwordEncoder = passwordEncoder;
         this.userService = userService;
         this.roleService = roleService;
     }
 
     @GetMapping(value = "/admin")
-    public String getUsers(ModelMap model) {
+    public String getUsers(@AuthenticationPrincipal UserDetails currentUser, ModelMap model) {
+        User user = userService.getUserByEmail(currentUser.getUsername());
+        model.addAttribute(user);
         List<User> userList = userService.getAllUsers();
         model.addAttribute("userList", userList);
+        model.addAttribute("roles", roleService.getAllRole());
         return "tableUsers";
+    }
+
+    @GetMapping(value = "/admin/info")
+    public String getUser(@AuthenticationPrincipal UserDetails currentUser, ModelMap model) {
+        User user = userService.getUserByEmail(currentUser.getUsername());
+        model.addAttribute(user);
+        return "admin-info";
     }
 
     @PostMapping(value = "/admin")
@@ -38,53 +53,43 @@ public class AdminController {
         return "redirect:/admin";
     }
 
-    @GetMapping(value = "/admin/addUser")
-    public String addUser(ModelMap model) {
-        User user = new User();
-        List<Role> roles = roleService.getAllRole();
+    @GetMapping("/admin/addUser")
+    public String pageUserForm(@AuthenticationPrincipal UserDetails currentUser, Model model) {
+        User user = userService.getUserByEmail(currentUser.getUsername());
         model.addAttribute("user", user);
-        model.addAttribute("roles", roles);
-        return "addAndUpdateUser";
+        model.addAttribute("newUser", new User());
+        model.addAttribute("roles", roleService.getAllRole());
+        return "addUser";
     }
 
-    @PostMapping(value = "/admin/addUser")
-    public String addUserDataBase(@ModelAttribute("user") User user, @RequestParam("roles") List<Long> roleIds) {
+    @PostMapping("/admin/addUser")
+    public String addUserDataBase(@ModelAttribute("newUser") User newUser, @RequestParam("roles") List<Long> roleIds) {
         List<Role> roles = roleService.getRolesByIds(roleIds);
-        user.setRoles(new HashSet<>(roles));
-        userService.saveUser(user);
+        newUser.setRoles(new HashSet<>(roles));
+        if (newUser.getPassword() != null && !newUser.getPassword().isEmpty()) {
+            newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
+        }
+        userService.saveUser(newUser);
         return "redirect:/admin";
     }
 
-    @GetMapping(value = "/admin/updateUser")
-    public String updateUser(@RequestParam("id") long id, ModelMap model) {
-        User user = userService.getUser(id);
-        List<Role> roles = roleService.getAllRole();
-        model.addAttribute("user", user);
-        model.addAttribute("roles", roles);
-        return "addAndUpdateUser";
-    }
-
     @PostMapping(value = "/admin/updateUser")
-    public String updateUserDataBase(@ModelAttribute("user") User user, @RequestParam("roles") List<Long> roleIds) {
-        User existingUser = userService.getUser(user.getId());
-
+    public String updateUserDataBase(@RequestParam("id") long id, @ModelAttribute User user, @RequestParam("roles") List<Long> roleIds) {
+        User existingUser = userService.getUser(id);
         existingUser.setFirstName(user.getFirstName());
         existingUser.setLastName(user.getLastName());
+        existingUser.setAge(user.getAge());
         existingUser.setEmail(user.getEmail());
-        existingUser.setUsername(user.getUsername());
-
         if (user.getPassword() != null && !user.getPassword().isEmpty()) {
-            existingUser.setPassword(user.getPassword());
+            existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
         }
-
         List<Role> rolesToAdd = roleService.getRolesByIds(roleIds);
-
+        existingUser.getRoles().clear();
         for (Role role : rolesToAdd) {
             if (!existingUser.getRoles().contains(role)) {
                 existingUser.addRole(role);
             }
         }
-
         userService.updateUser(existingUser);
         return "redirect:/admin";
     }
